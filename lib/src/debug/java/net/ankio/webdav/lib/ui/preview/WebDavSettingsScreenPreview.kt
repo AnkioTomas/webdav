@@ -2,13 +2,13 @@ package net.ankio.webdav.lib.ui.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import net.ankio.theme.PreviewAll
+import net.ankio.theme.PreviewAllScreen
 import net.ankio.theme.PreviewAllThemes
 import net.ankio.theme.ThemePreviewConfig
 import net.ankio.theme.ThemePreviewParameterProvider
 import net.ankio.webdav.lib.ui.WebDavSettingsScreen
 
-@PreviewAll
+@PreviewAllScreen
 @Composable
 private fun WebDavSettingsScreenPreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
@@ -25,7 +25,7 @@ private fun WebDavSettingsScreenPreview(
     }
 }
 
-@PreviewAll
+@PreviewAllScreen
 @Composable
 private fun WebDavSettingsScreenSuccessPreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
@@ -42,7 +42,7 @@ private fun WebDavSettingsScreenSuccessPreview(
     }
 }
 
-@PreviewAll
+@PreviewAllScreen
 @Composable
 private fun WebDavSettingsScreenFailurePreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,

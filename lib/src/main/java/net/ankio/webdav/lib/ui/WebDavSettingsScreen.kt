@@ -117,13 +117,8 @@ fun WebDavSettingsScreen(
                         },
                         modifier = Modifier.weight(1f),
                         enabled = !state.isTesting,
-                    ) {
-                        ThemeText(
-                            text = stringResource(R.string.webdav_save),
-                            style = AnkioTheme.textStyles.button,
-                            color = AnkioTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
+                        text = stringResource(R.string.webdav_save)
+                    )
                     ThemePrimaryButton(
                         onClick = {
                             if (state.isTesting) return@ThemePrimaryButton
@@ -155,13 +150,8 @@ fun WebDavSettingsScreen(
                         },
                         modifier = Modifier.weight(1f),
                         enabled = !state.isTesting,
-                    ) {
-                        ThemeText(
-                            text = stringResource(R.string.webdav_test),
-                            style = AnkioTheme.textStyles.button,
-                            color = AnkioTheme.colorScheme.onPrimary,
-                        )
-                    }
+                        text = stringResource(R.string.webdav_test)
+                    )
                 }
 
 
