@@ -1,5 +1,6 @@
 package net.ankio.webdav.lib.engine
 
+import com.thegrizzlylabs.sardineandroid.DavResource
 import com.thegrizzlylabs.sardineandroid.Sardine
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import net.ankio.webdav.lib.WebDavConfig
@@ -22,15 +23,7 @@ internal class SardineWebDavEngine(
     override fun exists(path: String): Boolean = sardine.exists(resolve(path))
 
     override fun list(path: String): List<WebDavResource> =
-        sardine.list(resolve(path)).map { resource ->
-            WebDavResource(
-                path = resource.path.orEmpty(),
-                name = resource.name.orEmpty(),
-                isDirectory = resource.isDirectory,
-                contentLength = resource.contentLength,
-                modifiedMillis = resource.modified?.time,
-            )
-        }
+        sardine.list(resolve(path)).map { it.toWebDavResource() }
 
     override fun mkdir(path: String) {
         sardine.createDirectory(resolve(path))
@@ -60,4 +53,24 @@ internal class SardineWebDavEngine(
     }
 
     private fun resolve(path: String): String = WebDavPaths.join(config.baseUrl, path)
+
+    private fun DavResource.toWebDavResource(): WebDavResource {
+        val hrefPath = href?.path.orEmpty()
+        val rawPath = path.orEmpty()
+        val contentType = contentType.orEmpty()
+        val directory = isDirectory
+            || rawPath.endsWith("/")
+            || hrefPath.endsWith("/")
+            || contentType.equals("httpd/unix-directory", ignoreCase = true)
+        val displayName = name?.takeIf { it.isNotBlank() }
+            ?: rawPath.trim('/').substringAfterLast('/')
+        val length = contentLength?.takeIf { it >= 0 } ?: 0L
+        return WebDavResource(
+            path = rawPath,
+            name = displayName,
+            isDirectory = directory,
+            contentLength = length,
+            modifiedMillis = modified?.time,
+        )
+    }
 }

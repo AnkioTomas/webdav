@@ -43,7 +43,10 @@ fun DemoMainScreen(
                     onRefresh = viewModel::refreshFiles,
                     onUploadTest = viewModel::uploadTestFile,
                     onNavigateUp = viewModel::navigateUp,
+                    onNavigateToRoot = viewModel::navigateToRoot,
+                    onNavigateToSegment = viewModel::navigateToSegment,
                     onEnterDirectory = viewModel::enterDirectory,
+                    onDownload = viewModel::downloadFile,
                     onDelete = viewModel::deleteResource,
                 )
             }

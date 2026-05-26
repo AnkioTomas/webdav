@@ -11,6 +11,9 @@ data class WebDavConfig(
     val baseUrl: String
         get() = WebDavPaths.normalizeBaseUrl(serverUrl)
 
+    val isCleartextHttp: Boolean
+        get() = baseUrl.startsWith("http://", ignoreCase = true)
+
     fun isValid(): Boolean {
         val hasScheme = baseUrl.startsWith("http://", ignoreCase = true) ||
             baseUrl.startsWith("https://", ignoreCase = true)

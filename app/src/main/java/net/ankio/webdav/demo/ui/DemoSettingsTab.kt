@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import net.ankio.webdav.demo.R
 import net.ankio.webdav.demo.ui.components.DemoTabScaffold
@@ -14,25 +15,19 @@ import net.ankio.webdav.lib.WebDavConfig
 import net.ankio.webdav.lib.WebDavConfigStore
 import net.ankio.webdav.lib.ui.WebDavSettingsScreen
 import net.ankio.webdav.lib.ui.WebDavSettingsState
+import net.ankio.webdav.lib.ui.WebDavTestUiState
 
 @Composable
 fun DemoSettingsTab(
     modifier: Modifier = Modifier,
     onConfigSaved: (WebDavConfig) -> Unit = {},
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     val saved = remember { WebDavConfigStore.load(context) }
     var serverUrl by rememberSaveable { mutableStateOf(saved.serverUrl) }
     var username by rememberSaveable { mutableStateOf(saved.username) }
     var password by rememberSaveable { mutableStateOf(saved.password) }
-    var testing by rememberSaveable { mutableStateOf(false) }
-
-    fun persist() {
-        val config = WebDavConfig(serverUrl, username, password)
-        WebDavConfigStore.save(context, config) { _, savedConfig ->
-            onConfigSaved(savedConfig)
-        }
-    }
+    var testState by remember { mutableStateOf<WebDavTestUiState>(WebDavTestUiState.Idle) }
 
     DemoTabScaffold(
         title = stringResource(R.string.tab_settings),
@@ -44,21 +39,18 @@ fun DemoSettingsTab(
                 serverUrl = serverUrl,
                 username = username,
                 password = password,
-                testing = testing,
+                testState = testState,
             ),
-            onServerChange = {
-                serverUrl = it
-                persist()
+            onServerChange = { serverUrl = it },
+            onUsernameChange = { username = it },
+            onPasswordChange = { password = it },
+            onSave = {
+                val config = WebDavConfig(serverUrl, username, password)
+                WebDavConfigStore.save(context, config) { _, savedConfig ->
+                    onConfigSaved(savedConfig)
+                }
             },
-            onUsernameChange = {
-                username = it
-                persist()
-            },
-            onPasswordChange = {
-                password = it
-                persist()
-            },
-            onTestingChange = { testing = it },
+            onTestStateChange = { testState = it },
         )
     }
 }

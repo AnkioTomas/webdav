@@ -1,6 +1,5 @@
 package net.ankio.webdav.demo.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.runtime.Composable
@@ -43,16 +45,13 @@ fun DemoFilesScreen(
     onRefresh: () -> Unit,
     onUploadTest: () -> Unit,
     onNavigateUp: () -> Unit,
+    onNavigateToRoot: () -> Unit,
+    onNavigateToSegment: (Int) -> Unit,
     onEnterDirectory: (WebDavResource) -> Unit,
+    onDownload: (WebDavResource) -> Unit,
     onDelete: (WebDavResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pathLabel = if (state.relativePath.isBlank()) {
-        stringResource(R.string.files_path_root)
-    } else {
-        stringResource(R.string.files_path, state.relativePath)
-    }
-
     DemoTabScaffold(
         title = stringResource(R.string.files_title),
         modifier = modifier,
@@ -63,7 +62,7 @@ fun DemoFilesScreen(
                 ThemeIconButton(onClick = onNavigateUp) {
                     ThemeIcon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.files_go_up),
                         tint = iconTint,
                     )
                 }
@@ -71,25 +70,24 @@ fun DemoFilesScreen(
             ThemeIconButton(onClick = onRefresh) {
                 ThemeIcon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.files_refresh),
                     tint = iconTint,
                 )
             }
             ThemeIconButton(onClick = onUploadTest) {
                 ThemeIcon(
                     imageVector = Icons.Default.Upload,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.files_upload_test),
                     tint = iconTint,
                 )
             }
         },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            ThemeText(
-                text = pathLabel,
-                style = AnkioTheme.textStyles.body2,
-                color = AnkioTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            DemoPathBar(
+                segments = state.pathSegments,
+                onRootClick = onNavigateToRoot,
+                onSegmentClick = onNavigateToSegment,
             )
             if (state.loading) {
                 ThemeLinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -117,7 +115,8 @@ fun DemoFilesScreen(
                     items(state.resources, key = { it.path }) { resource ->
                         DemoFileItem(
                             resource = resource,
-                            onOpen = { onEnterDirectory(resource) },
+                            onOpenDirectory = { onEnterDirectory(resource) },
+                            onDownload = { onDownload(resource) },
                             onDelete = { onDelete(resource) },
                         )
                     }
@@ -130,7 +129,8 @@ fun DemoFilesScreen(
 @Composable
 private fun DemoFileItem(
     resource: WebDavResource,
-    onOpen: () -> Unit,
+    onOpenDirectory: () -> Unit,
+    onDownload: () -> Unit,
     onDelete: () -> Unit,
 ) {
     val summary = if (resource.isDirectory) {
@@ -141,17 +141,18 @@ private fun DemoFileItem(
             formatSize(resource.contentLength),
         )
     }
+    val typeIcon = if (resource.isDirectory) Icons.Default.Folder else Icons.Default.InsertDriveFile
+    val typeTint = if (resource.isDirectory) {
+        AnkioTheme.colorScheme.primary
+    } else {
+        AnkioTheme.colorScheme.onSurfaceVariant
+    }
+
     ThemeCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .then(
-                if (resource.isDirectory) {
-                    Modifier.clickable(onClick = onOpen)
-                } else {
-                    Modifier
-                },
-            ),
+            .padding(horizontal = 12.dp),
+        onClick = if (resource.isDirectory) onOpenDirectory else null,
     ) {
         Row(
             modifier = Modifier
@@ -160,24 +161,46 @@ private fun DemoFileItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                ThemeText(
-                    text = resource.name,
-                    style = AnkioTheme.textStyles.title4,
-                    color = AnkioTheme.colorScheme.onSurface,
-                )
-                ThemeText(
-                    text = summary,
-                    style = AnkioTheme.textStyles.footnote1,
-                    color = AnkioTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            ThemeIconButton(onClick = onDelete) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 ThemeIcon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.files_delete),
-                    tint = AnkioTheme.colorScheme.error,
+                    imageVector = typeIcon,
+                    contentDescription = null,
+                    tint = typeTint,
                 )
+                Column {
+                    ThemeText(
+                        text = resource.name,
+                        style = AnkioTheme.textStyles.title4,
+                        color = AnkioTheme.colorScheme.onSurface,
+                    )
+                    ThemeText(
+                        text = summary,
+                        style = AnkioTheme.textStyles.footnote1,
+                        color = AnkioTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                if (!resource.isDirectory) {
+                    ThemeIconButton(onClick = onDownload) {
+                        ThemeIcon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = stringResource(R.string.files_download),
+                            tint = AnkioTheme.colorScheme.primary,
+                        )
+                    }
+                }
+                ThemeIconButton(onClick = onDelete) {
+                    ThemeIcon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.files_delete),
+                        tint = AnkioTheme.colorScheme.error,
+                    )
+                }
             }
         }
     }
@@ -202,7 +225,10 @@ private fun DemoFilesScreenPreview(
             onRefresh = {},
             onUploadTest = {},
             onNavigateUp = {},
+            onNavigateToRoot = {},
+            onNavigateToSegment = {},
             onEnterDirectory = {},
+            onDownload = {},
             onDelete = {},
         )
     }

@@ -6,6 +6,7 @@
     <string name="files_title">WebDAV 文件</string>
     <string name="files_path">当前路径：/%1$s</string>
     <string name="files_path_root">当前路径：/</string>
+    <string name="files_path_root_label">根目录</string>
     <string name="files_refresh">刷新列表</string>
     <string name="files_upload_test">上传测试文件</string>
     <string name="files_go_up">返回上级</string>
@@ -18,7 +19,11 @@
     <string name="files_upload_failed">上传失败：%1$s</string>
     <string name="files_delete_ok">已删除：%1$s</string>
     <string name="files_delete_failed">删除失败：%1$s</string>
+    <string name="files_download">下载</string>
+    <string name="files_download_ok">已下载到系统「下载/WebDAV Demo」：%1$s</string>
+    <string name="files_download_failed">下载失败：%1$s</string>
     <string name="files_open_dir">进入目录</string>
+    <string name="files_open_dir_failed">无法打开「%1$s」，服务器未识别为文件夹</string>
     <string name="files_delete">删除</string>
     <string name="files_item_dir">文件夹</string>
     <string name="files_item_file">文件 · %1$s</string>

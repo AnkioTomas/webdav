@@ -21,7 +21,10 @@ data class FilesUiState(
     val resources: List<WebDavResource> = emptyList(),
     val loading: Boolean = false,
     val statusMessage: String? = null,
-)
+) {
+    val pathSegments: List<String>
+        get() = relativePath.split('/').filter { it.isNotEmpty() }
+}
 
 class DemoViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -90,7 +93,17 @@ class DemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun enterDirectory(resource: WebDavResource) {
-        if (!resource.isDirectory) return
+        if (!resource.isDirectory) {
+            _filesState.update {
+                it.copy(
+                    statusMessage = context.getString(
+                        R.string.files_open_dir_failed,
+                        resource.name,
+                    ),
+                )
+            }
+            return
+        }
         _filesState.update {
             it.copy(relativePath = joinPath(it.relativePath, resource.name))
         }
@@ -98,10 +111,25 @@ class DemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun navigateUp() {
-        val parent = _filesState.value.relativePath
-            .trim('/')
-            .substringBeforeLast('/', missingDelimiterValue = "")
+        val segments = _filesState.value.pathSegments
+        if (segments.isEmpty()) return
+        val parent = segments.dropLast(1).joinToString("/")
         _filesState.update { it.copy(relativePath = parent) }
+        refreshFiles()
+    }
+
+    fun navigateToRoot() {
+        if (_filesState.value.relativePath.isEmpty()) return
+        _filesState.update { it.copy(relativePath = "") }
+        refreshFiles()
+    }
+
+    fun navigateToSegment(segmentIndex: Int) {
+        val segments = _filesState.value.pathSegments
+        if (segmentIndex !in segments.indices) return
+        val target = segments.take(segmentIndex + 1).joinToString("/")
+        if (target == _filesState.value.relativePath) return
+        _filesState.update { it.copy(relativePath = target) }
         refreshFiles()
     }
 
@@ -130,6 +158,40 @@ class DemoViewModel(application: Application) : AndroidViewModel(application) {
                             loading = false,
                             statusMessage = context.getString(
                                 R.string.files_upload_failed,
+                                error.message ?: error.javaClass.simpleName,
+                            ),
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    fun downloadFile(resource: WebDavResource) {
+        if (resource.isDirectory) return
+        val config = currentConfig()
+        if (!config.isValid()) return
+        val relative = joinPath(_filesState.value.relativePath, resource.name)
+        viewModelScope.launch {
+            _filesState.update { it.copy(loading = true, statusMessage = null) }
+            runCatching {
+                val bytes = WebDav.client(config).readBytes(relative)
+                DemoDownload.saveToDownloads(context, resource.name, bytes)
+            }.fold(
+                onSuccess = { savedName ->
+                    _filesState.update {
+                        it.copy(
+                            loading = false,
+                            statusMessage = context.getString(R.string.files_download_ok, savedName),
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _filesState.update {
+                        it.copy(
+                            loading = false,
+                            statusMessage = context.getString(
+                                R.string.files_download_failed,
                                 error.message ?: error.javaClass.simpleName,
                             ),
                         )

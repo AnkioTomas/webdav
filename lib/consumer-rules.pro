@@ -6,9 +6,12 @@
 -keep class net.ankio.webdav.lib.WebDavConfigStore { *; }
 -keep class net.ankio.webdav.lib.WebDavTest { *; }
 -keep class net.ankio.webdav.lib.WebDavPaths { *; }
+-keep class net.ankio.webdav.lib.WebDavListing { *; }
 -keep class net.ankio.webdav.lib.WebDavTestResult { *; }
 -keep class net.ankio.webdav.lib.WebDavTestResult$* { *; }
 -keep class net.ankio.webdav.lib.ui.WebDavSettingsState { *; }
+-keep class net.ankio.webdav.lib.ui.WebDavTestUiState { *; }
+-keep class net.ankio.webdav.lib.ui.WebDavTestUiState$* { *; }
 
 # Sardine / OkHttp（WebDAV 底层）
 -dontwarn okhttp3.**

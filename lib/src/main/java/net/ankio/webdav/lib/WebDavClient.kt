@@ -19,7 +19,9 @@ class WebDavClient internal constructor(
 
     suspend fun exists(path: String = ""): Boolean = io { engine.exists(path) }
 
-    suspend fun list(path: String = ""): List<WebDavResource> = io { engine.list(path) }
+    suspend fun list(path: String = ""): List<WebDavResource> = io {
+        WebDavListing.normalize(engine.list(path), path)
+    }
 
     suspend fun mkdir(path: String) = io { engine.mkdir(path) }
 
