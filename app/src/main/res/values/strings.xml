@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WebDAV Demo</string>
+    <string name="tab_settings">设置</string>
+    <string name="tab_files">文件</string>
+    <string name="files_title">WebDAV 文件</string>
+    <string name="files_path">当前路径：/%1$s</string>
+    <string name="files_path_root">当前路径：/</string>
+    <string name="files_refresh">刷新列表</string>
+    <string name="files_upload_test">上传测试文件</string>
+    <string name="files_go_up">返回上级</string>
+    <string name="files_empty">目录为空</string>
+    <string name="files_loading">加载中…</string>
+    <string name="files_config_required">请先在「设置」中配置 WebDAV</string>
+    <string name="files_list_ok">已加载 %1$d 项</string>
+    <string name="files_list_failed">列表失败：%1$s</string>
+    <string name="files_upload_ok">已上传：%1$s</string>
+    <string name="files_upload_failed">上传失败：%1$s</string>
+    <string name="files_delete_ok">已删除：%1$s</string>
+    <string name="files_delete_failed">删除失败：%1$s</string>
+    <string name="files_open_dir">进入目录</string>
+    <string name="files_delete">删除</string>
+    <string name="files_item_dir">文件夹</string>
+    <string name="files_item_file">文件 · %1$s</string>
+</resources>

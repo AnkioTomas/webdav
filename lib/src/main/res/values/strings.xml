@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webdav_section">WebDAV</string>
+    <string name="webdav_server">服务器地址</string>
+    <string name="webdav_server_hint">https://dav.example.com/dav/</string>
+    <string name="webdav_username">用户名</string>
+    <string name="webdav_password">密码</string>
+    <string name="webdav_test">测试连接</string>
+    <string name="webdav_test_running">正在测试连接…</string>
+    <string name="webdav_test_success">连接成功</string>
+    <string name="webdav_test_failed">连接失败：%1$s</string>
+    <string name="webdav_config_invalid">请填写有效的服务器地址和用户名</string>
+</resources>
