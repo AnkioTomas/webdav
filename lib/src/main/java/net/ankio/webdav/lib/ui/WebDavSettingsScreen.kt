@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Lock
@@ -16,21 +15,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.ankio.theme.AnkioTheme
 import net.ankio.theme.compat.ThemeCard
-import net.ankio.theme.compat.ThemeHorizontalDivider
 import net.ankio.theme.compat.ThemeLinearProgressIndicator
 import net.ankio.theme.compat.ThemePrimaryButton
 import net.ankio.theme.compat.ThemeSecondaryButton
 import net.ankio.theme.compat.ThemeText
-import net.ankio.theme.compat.ThemeTextField
+import net.ankio.theme.settings.SettingCardPosition
+import net.ankio.theme.settings.SettingInputMode
 import net.ankio.theme.settings.ThemeSectionHeader
+import net.ankio.theme.settings.ThemeSettingTextField
+import net.ankio.theme.settings.toShape
+import net.ankio.theme.settings.toVerticalPadding
 import net.ankio.webdav.lib.R
 import net.ankio.webdav.lib.WebDavConfig
 import net.ankio.webdav.lib.WebDavTest
@@ -59,16 +58,62 @@ fun WebDavSettingsScreen(
     val savedMessage = stringResource(R.string.webdav_saved)
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         ThemeSectionHeader(stringResource(R.string.webdav_section))
 
+        ThemeSettingTextField(
+            value = state.serverUrl,
+            onValueChange = onServerChange,
+            title = stringResource(R.string.webdav_server),
+            placeholder = stringResource(R.string.webdav_server_hint),
+            startAction = {
+                Icon(
+                    imageVector = Icons.Filled.Link,
+                    contentDescription = null,
+                    tint = AnkioTheme.colorScheme.primary,
+                )
+            },
+            position = SettingCardPosition.First,
+        )
+
+        ThemeSettingTextField(
+            value = state.username,
+            onValueChange = onUsernameChange,
+            title = stringResource(R.string.webdav_username),
+            startAction = {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    tint = AnkioTheme.colorScheme.primary,
+                )
+            },
+            position = SettingCardPosition.Middle,
+        )
+
+        ThemeSettingTextField(
+            value = state.password,
+            onValueChange = onPasswordChange,
+            title = stringResource(R.string.webdav_password),
+            inputMode = SettingInputMode.Password,
+            startAction = {
+                Icon(
+                    imageVector = Icons.Filled.Lock,
+                    contentDescription = null,
+                    tint = AnkioTheme.colorScheme.primary,
+                )
+            },
+            position = SettingCardPosition.Middle,
+        )
+
+        val lastPos = SettingCardPosition.Last
+        val (lastTop, lastBottom) = lastPos.toVerticalPadding()
         ThemeCard(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = lastTop, bottom = lastBottom),
+            shape = lastPos.toShape(),
         ) {
             Column(
                 modifier = Modifier
@@ -76,27 +121,6 @@ fun WebDavSettingsScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                WebDavConfigField(
-                    icon = Icons.Filled.Link,
-                    label = stringResource(R.string.webdav_server),
-                    value = state.serverUrl,
-                    onValueChange = onServerChange,
-                    placeholder = stringResource(R.string.webdav_server_hint),
-                )
-                WebDavConfigField(
-                    icon = Icons.Filled.Person,
-                    label = stringResource(R.string.webdav_username),
-                    value = state.username,
-                    onValueChange = onUsernameChange,
-                )
-                WebDavConfigField(
-                    icon = Icons.Filled.Lock,
-                    label = stringResource(R.string.webdav_password),
-                    value = state.password,
-                    onValueChange = onPasswordChange,
-                    isPassword = true,
-                )
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -117,7 +141,7 @@ fun WebDavSettingsScreen(
                         },
                         modifier = Modifier.weight(1f),
                         enabled = !state.isTesting,
-                        text = stringResource(R.string.webdav_save)
+                        text = stringResource(R.string.webdav_save),
                     )
                     ThemePrimaryButton(
                         onClick = {
@@ -150,11 +174,9 @@ fun WebDavSettingsScreen(
                         },
                         modifier = Modifier.weight(1f),
                         enabled = !state.isTesting,
-                        text = stringResource(R.string.webdav_test)
+                        text = stringResource(R.string.webdav_test),
                     )
                 }
-
-
 
                 WebDavTestResultContent(
                     testState = state.testState,
@@ -165,36 +187,6 @@ fun WebDavSettingsScreen(
             }
         }
     }
-}
-
-@Composable
-private fun WebDavConfigField(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String = "",
-    isPassword: Boolean = false,
-) {
-    ThemeTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = label,
-        placeholder = placeholder,
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = AnkioTheme.colorScheme.primary,
-            )
-        },
-        visualTransformation = if (isPassword) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        },
-    )
 }
 
 @Composable
