@@ -1,19 +1,15 @@
 # Demo App — R8 / ProGuard
-# lib 模块的 consumer-rules.pro 会在打包时自动合并
+# lib 模块 consumer-rules.pro 会自动合并（WebDAV / Theme / Sardine / Miuix）
 
-# Compose（保留行号便于崩溃定位）
+# 崩溃堆栈行号
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Kotlin
--keep class kotlin.Metadata { *; }
--dontwarn kotlin.reflect.**
-
-# 入口
+# Demo 入口
 -keep class net.ankio.webdav.demo.WebDavApp { *; }
 -keep class net.ankio.webdav.demo.MainActivity { *; }
 
-# ViewModel
+# ViewModel（反射构造）
 -keep class * extends androidx.lifecycle.ViewModel {
     <init>(...);
 }
@@ -21,6 +17,5 @@
     <init>(android.app.Application);
 }
 
-# theme 库 Toast（反射/Compose）
--keep class net.ankio.theme.** { *; }
--dontwarn net.ankio.theme.**
+# Compose Preview（仅 debug 存在，release 无害）
+-dontwarn androidx.compose.ui.tooling.**

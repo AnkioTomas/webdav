@@ -19,7 +19,7 @@ Android WebDAV 客户端库：轻量 Kotlin API、Compose 配置页、连接测�
 | minSdk | 30 |
 | Java | 17 |
 | Compose | BOM 2026.05+ |
-| Theme | `com.github.AnkioTomas:theme:1.0.4+` |
+| Theme | `com.github.AnkioTomas:theme:1.0.6+` |
 
 ## 接入
 
