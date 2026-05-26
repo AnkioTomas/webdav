@@ -2,6 +2,7 @@ package net.ankio.webdav.lib
 
 import android.app.Application
 import android.content.Context
+import net.ankio.theme.ThemeSettings
 import net.ankio.theme.toast.ThemeToast
 
 /**
@@ -10,6 +11,7 @@ import net.ankio.theme.toast.ThemeToast
 object WebDav {
 
     fun init(application: Application) {
+        ThemeSettings.init(application)
         ThemeToast.init(application)
     }
 
