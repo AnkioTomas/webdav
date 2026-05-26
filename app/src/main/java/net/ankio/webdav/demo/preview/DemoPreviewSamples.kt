@@ -2,11 +2,8 @@ package net.ankio.webdav.demo.preview
 
 import net.ankio.webdav.demo.FilesUiState
 import net.ankio.webdav.lib.WebDavResource
-import net.ankio.webdav.lib.ui.preview.WebDavPreviewSamples
 
 object DemoPreviewSamples {
-    val settingsState = WebDavPreviewSamples.settingsState
-
     val filesUiState = FilesUiState(
         relativePath = "demo",
         resources = listOf(

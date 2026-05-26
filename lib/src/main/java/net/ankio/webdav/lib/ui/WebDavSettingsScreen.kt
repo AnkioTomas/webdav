@@ -16,19 +16,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.ankio.theme.AnkioTheme
-import net.ankio.theme.PreviewAll
-import net.ankio.theme.PreviewAllThemes
-import net.ankio.theme.ThemePreviewConfig
-import net.ankio.theme.ThemePreviewParameterProvider
 import net.ankio.theme.compat.ThemeCard
+import net.ankio.theme.compat.ThemeHorizontalDivider
 import net.ankio.theme.compat.ThemeLinearProgressIndicator
 import net.ankio.theme.compat.ThemePrimaryButton
 import net.ankio.theme.compat.ThemeSecondaryButton
@@ -39,7 +35,6 @@ import net.ankio.webdav.lib.R
 import net.ankio.webdav.lib.WebDavConfig
 import net.ankio.webdav.lib.WebDavTest
 import net.ankio.webdav.lib.WebDavTestResult
-import net.ankio.webdav.lib.ui.preview.WebDavPreviewSamples
 
 /**
  * WebDAV 配置 Compose 页面。
@@ -101,89 +96,84 @@ fun WebDavSettingsScreen(
                     onValueChange = onPasswordChange,
                     isPassword = true,
                 )
-            }
-        }
 
-        ThemeCard(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                ThemeSecondaryButton(
-                    onClick = {
-                        val config = state.toConfig()
-                        if (!config.isValid()) {
-                            onTestStateChange(WebDavTestUiState.Failure(invalidMessage))
-                            return@ThemeSecondaryButton
-                        }
-                        configValidator(config)?.let { message ->
-                            onTestStateChange(WebDavTestUiState.Failure(message))
-                            return@ThemeSecondaryButton
-                        }
-                        onSave()
-                        onTestStateChange(WebDavTestUiState.Saved)
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = !state.isTesting,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    ThemeText(
-                        text = stringResource(R.string.webdav_save),
-                        style = AnkioTheme.textStyles.button,
-                        color = AnkioTheme.colorScheme.onSecondaryContainer,
-                    )
-                }
-                ThemePrimaryButton(
-                    onClick = {
-                        if (state.isTesting) return@ThemePrimaryButton
-                        val config = state.toConfig()
-                        if (!config.isValid()) {
-                            onTestStateChange(WebDavTestUiState.Failure(invalidMessage))
-                            return@ThemePrimaryButton
-                        }
-                        configValidator(config)?.let { message ->
-                            onTestStateChange(WebDavTestUiState.Failure(message))
-                            return@ThemePrimaryButton
-                        }
-                        scope.launch {
-                            onTestStateChange(WebDavTestUiState.Running)
-                            when (val result = WebDavTest.run(config)) {
-                                WebDavTestResult.Success -> {
-                                    onSave()
-                                    onTestStateChange(WebDavTestUiState.Success)
-                                }
+                    ThemeSecondaryButton(
+                        onClick = {
+                            val config = state.toConfig()
+                            if (!config.isValid()) {
+                                onTestStateChange(WebDavTestUiState.Failure(invalidMessage))
+                                return@ThemeSecondaryButton
+                            }
+                            configValidator(config)?.let { message ->
+                                onTestStateChange(WebDavTestUiState.Failure(message))
+                                return@ThemeSecondaryButton
+                            }
+                            onSave()
+                            onTestStateChange(WebDavTestUiState.Saved)
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !state.isTesting,
+                    ) {
+                        ThemeText(
+                            text = stringResource(R.string.webdav_save),
+                            style = AnkioTheme.textStyles.button,
+                            color = AnkioTheme.colorScheme.onSecondaryContainer,
+                        )
+                    }
+                    ThemePrimaryButton(
+                        onClick = {
+                            if (state.isTesting) return@ThemePrimaryButton
+                            val config = state.toConfig()
+                            if (!config.isValid()) {
+                                onTestStateChange(WebDavTestUiState.Failure(invalidMessage))
+                                return@ThemePrimaryButton
+                            }
+                            configValidator(config)?.let { message ->
+                                onTestStateChange(WebDavTestUiState.Failure(message))
+                                return@ThemePrimaryButton
+                            }
+                            scope.launch {
+                                onTestStateChange(WebDavTestUiState.Running)
+                                when (val result = WebDavTest.run(config)) {
+                                    WebDavTestResult.Success -> {
+                                        onSave()
+                                        onTestStateChange(WebDavTestUiState.Success)
+                                    }
 
-                                is WebDavTestResult.Failure -> {
-                                    val detail = result.message.ifBlank { "unknown" }
-                                    onTestStateChange(
-                                        WebDavTestUiState.Failure(failedTemplate.format(detail)),
-                                    )
+                                    is WebDavTestResult.Failure -> {
+                                        val detail = result.message.ifBlank { "unknown" }
+                                        onTestStateChange(
+                                            WebDavTestUiState.Failure(failedTemplate.format(detail)),
+                                        )
+                                    }
                                 }
                             }
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = !state.isTesting,
-                ) {
-                    ThemeText(
-                        text = stringResource(R.string.webdav_test),
-                        style = AnkioTheme.textStyles.button,
-                        color = AnkioTheme.colorScheme.onPrimary,
-                    )
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !state.isTesting,
+                    ) {
+                        ThemeText(
+                            text = stringResource(R.string.webdav_test),
+                            style = AnkioTheme.textStyles.button,
+                            color = AnkioTheme.colorScheme.onPrimary,
+                        )
+                    }
                 }
+
+
+
+                WebDavTestResultContent(
+                    testState = state.testState,
+                    testingMessage = testingMessage,
+                    successMessage = successMessage,
+                    savedMessage = savedMessage,
+                )
             }
         }
-
-        WebDavTestResultPanel(
-            testState = state.testState,
-            testingMessage = testingMessage,
-            successMessage = successMessage,
-            savedMessage = savedMessage,
-        )
     }
 }
 
@@ -218,7 +208,7 @@ private fun WebDavConfigField(
 }
 
 @Composable
-private fun WebDavTestResultPanel(
+internal fun WebDavTestResultContent(
     testState: WebDavTestUiState,
     testingMessage: String,
     successMessage: String,
@@ -227,99 +217,55 @@ private fun WebDavTestResultPanel(
     val idleMessage = stringResource(R.string.webdav_test_result_idle)
     val title = stringResource(R.string.webdav_test_result_title)
 
-    ThemeCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        containerColor = AnkioTheme.colorScheme.surfaceContainer,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            ThemeText(
-                text = title,
-                style = AnkioTheme.textStyles.title4,
-                color = AnkioTheme.colorScheme.onSurface,
-            )
-            Spacer(Modifier.height(8.dp))
-            when (testState) {
-                WebDavTestUiState.Idle -> {
-                    ThemeText(
-                        text = idleMessage,
-                        style = AnkioTheme.textStyles.body2,
-                        color = AnkioTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ThemeText(
+            text = title,
+            style = AnkioTheme.textStyles.title4,
+            color = AnkioTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.height(8.dp))
+        when (testState) {
+            WebDavTestUiState.Idle -> {
+                ThemeText(
+                    text = idleMessage,
+                    style = AnkioTheme.textStyles.body2,
+                    color = AnkioTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
-                WebDavTestUiState.Running -> {
-                    ThemeLinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    Spacer(Modifier.height(8.dp))
-                    ThemeText(
-                        text = testingMessage,
-                        style = AnkioTheme.textStyles.body2,
-                        color = AnkioTheme.colorScheme.primary,
-                    )
-                }
+            WebDavTestUiState.Running -> {
+                ThemeLinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                ThemeText(
+                    text = testingMessage,
+                    style = AnkioTheme.textStyles.body2,
+                    color = AnkioTheme.colorScheme.primary,
+                )
+            }
 
-                WebDavTestUiState.Success -> {
-                    ThemeText(
-                        text = successMessage,
-                        style = AnkioTheme.textStyles.body2,
-                        color = AnkioTheme.colorScheme.primary,
-                    )
-                }
+            WebDavTestUiState.Success -> {
+                ThemeText(
+                    text = successMessage,
+                    style = AnkioTheme.textStyles.body2,
+                    color = AnkioTheme.colorScheme.primary,
+                )
+            }
 
-                is WebDavTestUiState.Failure -> {
-                    ThemeText(
-                        text = testState.message,
-                        style = AnkioTheme.textStyles.body2,
-                        color = AnkioTheme.colorScheme.error,
-                    )
-                }
+            is WebDavTestUiState.Failure -> {
+                ThemeText(
+                    text = testState.message,
+                    style = AnkioTheme.textStyles.body2,
+                    color = AnkioTheme.colorScheme.error,
+                )
+            }
 
-                WebDavTestUiState.Saved -> {
-                    ThemeText(
-                        text = savedMessage,
-                        style = AnkioTheme.textStyles.body2,
-                        color = AnkioTheme.colorScheme.primary,
-                    )
-                }
+            WebDavTestUiState.Saved -> {
+                ThemeText(
+                    text = savedMessage,
+                    style = AnkioTheme.textStyles.body2,
+                    color = AnkioTheme.colorScheme.primary,
+                )
             }
         }
-    }
-}
-
-@PreviewAll
-@Composable
-private fun WebDavSettingsScreenPreview(
-    @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
-) {
-    PreviewAllThemes(config) {
-        WebDavSettingsScreen(
-            state = WebDavPreviewSamples.settingsState,
-            onServerChange = {},
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onSave = {},
-            onTestStateChange = {},
-        )
-    }
-}
-
-@PreviewAll
-@Composable
-private fun WebDavSettingsScreenSuccessPreview(
-    @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
-) {
-    PreviewAllThemes(config) {
-        WebDavSettingsScreen(
-            state = WebDavPreviewSamples.settingsStateSuccess,
-            onServerChange = {},
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onSave = {},
-            onTestStateChange = {},
-        )
     }
 }
