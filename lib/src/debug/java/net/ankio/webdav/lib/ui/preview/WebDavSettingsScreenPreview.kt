@@ -14,14 +14,7 @@ private fun WebDavSettingsScreenPreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
 ) {
     PreviewAllThemes(config) {
-        WebDavSettingsScreen(
-            state = WebDavPreviewSamples.settingsState,
-            onServerChange = {},
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onSave = {},
-            onTestStateChange = {},
-        )
+        WebDavSettingsScreen(state = WebDavPreviewSamples.settingsState)
     }
 }
 
@@ -31,14 +24,7 @@ private fun WebDavSettingsScreenSuccessPreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
 ) {
     PreviewAllThemes(config) {
-        WebDavSettingsScreen(
-            state = WebDavPreviewSamples.settingsStateSuccess,
-            onServerChange = {},
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onSave = {},
-            onTestStateChange = {},
-        )
+        WebDavSettingsScreen(state = WebDavPreviewSamples.settingsStateSuccess)
     }
 }
 
@@ -48,13 +34,6 @@ private fun WebDavSettingsScreenFailurePreview(
     @PreviewParameter(ThemePreviewParameterProvider::class) config: ThemePreviewConfig,
 ) {
     PreviewAllThemes(config) {
-        WebDavSettingsScreen(
-            state = WebDavPreviewSamples.settingsStateFailure,
-            onServerChange = {},
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onSave = {},
-            onTestStateChange = {},
-        )
+        WebDavSettingsScreen(state = WebDavPreviewSamples.settingsStateFailure)
     }
 }

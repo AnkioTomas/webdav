@@ -7,7 +7,7 @@ Android WebDAV 客户端库：轻量 Kotlin API、Compose 配置页、连接测�
 ## 特性
 
 - **WebDavClient**：`list` / `read` / `write` / `delete` / `mkdir` / `mkdirs` / `move` / `copy` 等，协程 + `Dispatchers.IO`
-- **WebDavSettingsScreen**：基于 [Ankio Theme](https://github.com/AnkioTomas/theme) `1.0.8+` 的设置 UI（`ThemeSettingTextField` + `SettingInputMode`）；测试成功自动 `onSave()`
+- **WebDavSettingsScreen**：基于 [Ankio Theme](https://github.com/AnkioTomas/theme) `1.0.8+` 的设置 UI（`ThemeSettingTextField` + `SettingInputMode`）；内部管理输入、测试与 `WebDavConfigStore` 持久化，可选 `onSaved` 接收已保存配置
 - **WebDavConfigStore**：SharedPreferences 持久化，`OnConfigSaved` 监听
 - **目录列表**：过滤 `.` / `..` 与当前目录项；文件夹识别增强（路径尾 `/`、`httpd/unix-directory` 等）
 - **R8**：`consumer-rules.pro` 随 AAR 合并，覆盖 WebDAV API、Theme、Miuix、Sardine / OkHttp / SimpleXML
@@ -62,49 +62,27 @@ class App : Application() {
 
 ### 4. 配置页
 
-`WebDavSettingsScreen` 为受控组件：宿主持有 `WebDavSettingsState` 并处理 `onSave` / `onTestStateChange`。页面为**单张设置卡片**（服务器、账号、密码、操作按钮、测试结果区）。
+`WebDavSettingsScreen`：页面为**单张设置卡片**（服务器、账号、密码、操作按钮、测试结果区）。输入与测试状态、以及点击「保存」或连接测试成功时的配置写入，均在组件内部完成。
 
-**保存**与**连接测试成功**时都会调用 `onSave()`，请在回调中写入 `WebDavConfigStore`：
+`state` 为可选：
+- 传入 `state`：按传入值作为初始状态。
+- 不传 `state`：组件内部自动从 `WebDavConfigStore.load(context)` 读取初始值。
+
+写入成功后可选 `onSaved(config)`，便于宿主刷新界面或联动逻辑（全局监听仍可用 `WebDavConfigStore.addOnSaveListener`）。
 
 ```kotlin
-val saved = remember { WebDavConfigStore.load(context) }
-var serverUrl by rememberSaveable { mutableStateOf(saved.serverUrl) }
-var username by rememberSaveable { mutableStateOf(saved.username) }
-var password by rememberSaveable { mutableStateOf(saved.password) }
-var testState by remember { mutableStateOf<WebDavTestUiState>(WebDavTestUiState.Idle) }
-
 WebDavSettingsScreen(
-    state = WebDavSettingsState(
-        serverUrl = serverUrl,
-        username = username,
-        password = password,
-        testState = testState,
-    ),
-    onServerChange = { serverUrl = it },
-    onUsernameChange = { username = it },
-    onPasswordChange = { password = it },
-    onSave = {
-        WebDavConfigStore.save(
-            context,
-            WebDavConfig(serverUrl, username, password),
-        ) { _, config ->
-            // 配置已持久化
-        }
-    },
-    onTestStateChange = { testState = it },
-    configValidator = { config ->
-        // 可选：返回非 null 则阻止保存/测试
-        if (config.isCleartextHttp) "请使用 HTTPS" else null
+    onSaved = { config ->
+        // 可选：配置已写入 SharedPreferences，与 Store 监听一并触发
     },
 )
 ```
 
 | 参数 | 说明 |
 |------|------|
-| `state` | `WebDavSettingsState`（含 `testState`） |
-| `onSave` | 用户点「保存」，或连接测试成功时调用 |
-| `onTestStateChange` | `Idle` / `Running` / `Success` / `Failure` / `Saved` |
-| `configValidator` | 保存/测试前校验，返回错误文案则中止 |
+| `state` | 可选；传入时使用传入值作为初始输入，不传时内部自动从 `WebDavConfigStore` 读取 |
+| `modifier` | 可选；布局修饰 |
+| `onSaved` | 可选；内部 `WebDavConfigStore.save` 完成后回调，参数为刚持久化的 `WebDavConfig` |
 
 ### 5. 客户端 API
 
