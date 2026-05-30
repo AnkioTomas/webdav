@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="webdav_section">WebDAV</string>
-    <string name="webdav_server">服务器地址</string>
-    <string name="webdav_server_hint">https://dav.example.com/dav/ 或 http://192.168.1.1/webdav/</string>
-    <string name="webdav_username">用户名</string>
-    <string name="webdav_password">密码</string>
-    <string name="webdav_save">保存</string>
-    <string name="webdav_test">测试连接</string>
-    <string name="webdav_test_running">正在测试连接…</string>
-    <string name="webdav_test_success">连接成功，配置已自动保存</string>
-    <string name="webdav_test_failed">连接失败：%1$s</string>
-    <string name="webdav_saved">配置已保存</string>
-    <string name="webdav_config_invalid">请填写有效的服务器地址和用户名</string>
-    <string name="webdav_test_result_title">测试结果</string>
-    <string name="webdav_test_result_idle">填写配置后，可保存或测试连接</string>
+    <string name="webdav_server">Server URL</string>
+    <string name="webdav_server_hint">https://dav.example.com/dav/ or http://192.168.1.1/webdav/</string>
+    <string name="webdav_username">Username</string>
+    <string name="webdav_password">Password</string>
+    <string name="webdav_save">Save</string>
+    <string name="webdav_test">Test connection</string>
+    <string name="webdav_test_running">Testing connection…</string>
+    <string name="webdav_test_success">Connected. Configuration saved automatically.</string>
+    <string name="webdav_test_failed">Connection failed: %1$s</string>
+    <string name="webdav_saved">Configuration saved</string>
+    <string name="webdav_config_invalid">Enter a valid server URL and username</string>
+    <string name="webdav_test_result_title">Test result</string>
+    <string name="webdav_test_result_idle">Fill in the form, then save or test the connection</string>
 </resources>

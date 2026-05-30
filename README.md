@@ -7,7 +7,7 @@ Android WebDAV 客户端库：轻量 Kotlin API、Compose 配置页、连接测�
 ## 特性
 
 - **WebDavClient**：`list` / `read` / `write` / `delete` / `mkdir` / `mkdirs` / `move` / `copy` 等，协程 + `Dispatchers.IO`
-- **WebDavSettingsScreen**：基于 [Ankio Theme](https://github.com/AnkioTomas/theme) `1.0.8+` 的设置 UI（`ThemeSettingTextField` + `SettingInputMode`）；内部管理输入、测试与 `WebDavConfigStore` 持久化，可选 `onSaved` 接收已保存配置
+- **WebDavSettingsScreen**：基于 [Ankio Theme](https://github.com/AnkioTomas/theme) `1.1.5+` 的设置 UI（`ThemeSettingTextField` + `SettingInputMode`）；内部管理输入、测试与 `WebDavConfigStore` 持久化，可选 `onSaved` 接收已保存配置；文案支持 `values` / `values-zh`
 - **WebDavConfigStore**：SharedPreferences 持久化，`OnConfigSaved` 监听
 - **目录列表**：过滤 `.` / `..` 与当前目录项；文件夹识别增强（路径尾 `/`、`httpd/unix-directory` 等）
 - **R8**：`consumer-rules.pro` 随 AAR 合并，覆盖 WebDAV API、Theme、Miuix、Sardine / OkHttp / SimpleXML
@@ -19,7 +19,7 @@ Android WebDAV 客户端库：轻量 Kotlin API、Compose 配置页、连接测�
 | minSdk | 30 |
 | Java | 17 |
 | Compose | BOM 2026.05+ |
-| Theme | `com.github.AnkioTomas:theme:1.0.8+`（`lib` 以 `api` 传递） |
+| Theme | `com.github.AnkioTomas:theme:1.1.5+`（`lib` 以 `api` 传递） |
 
 ## 接入
 
